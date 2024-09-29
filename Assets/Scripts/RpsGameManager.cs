@@ -27,12 +27,18 @@ public class RpsGameManager : MonoBehaviour
     [SerializeField] private GameObject finalPanel;
     [SerializeField] private Text result;
     
+    [SerializeField] private Record record;
+    [SerializeField] private RectTransform contentForRecord;
+    
     private int _playerScore = 0;
     private int _cpuScore = 0;
     
     private RpsChoice _playerChoice;
     private RpsChoice _cpuChoice;
-    
+
+    private int recordNumber = 0;
+    private string gameStatus;
+
     public void PlayerChoose(int choiceIndex)
     {
         DeActivateButtons();
@@ -150,6 +156,7 @@ public class RpsGameManager : MonoBehaviour
 
     private void LoseTheGame()
     {
+        gameStatus = "Lose";
         AudioManager.Instance.PlayGameOverSound();
         finalPanel.SetActive(true);
         UpdateResultState("You Lose",Color.red);
@@ -163,6 +170,7 @@ public class RpsGameManager : MonoBehaviour
 
     private void WinTheGame()
     {
+        gameStatus = "Win";
         AudioManager.Instance.PlayVictorySound();
         finalPanel.SetActive(true);
         UpdateResultState("You Win",Color.green);
@@ -193,11 +201,20 @@ public class RpsGameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        CreateNewRecordInScoreBord();
         _playerScore = 0;
         _cpuScore = 0;
         finalPanel.SetActive(false);
         UpdateTextUI();
         ActivateButtons();
         ResetStateOfHands();
+    }
+
+    private void CreateNewRecordInScoreBord()
+    {
+        recordNumber++;
+        GameObject newRecord = Instantiate(record.gameObject);
+        newRecord.GetComponent<Record>().DataInput(recordNumber,_playerScore,_cpuScore,gameStatus);
+        newRecord.GetComponent<RectTransform>().SetParent(contentForRecord);
     }
 }
